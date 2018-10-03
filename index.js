@@ -42,10 +42,10 @@ function flameGraph (opts) {
   var element = opts.element
   var c = 18 // cell height
   var h = opts.height || (maxDepth(tree) + 2) * c // graph height
-  var minHeight = opts.minHeight || 950
+  var minHeight = opts.minHeight || 150
   h = h < minHeight ? minHeight : h
   h += opts.topOffset || 0
-  var w = opts.width || document.body.clientWidth * 0.89 // graph width
+  var w = opts.width || element.getBoundingClientRect().width  // graph width
   var scaleToWidth = null
   var scaleToGraph = null
   var panZoom = d3.zoom().on('zoom', function () {
@@ -71,12 +71,21 @@ function flameGraph (opts) {
   }
 
   onresize()
-
+  
   function onresize () {
+    w = element.getBoundingClientRect().width
+    
     panZoom.translateExtent([[0, 0], [w, h]])
-
+    
     scaleToWidth = d3.scaleLinear().range([0, w])
     scaleToGraph = d3.scaleLinear().domain([0, w]).range([0, 1])
+    
+  }
+  
+  window.addEventListener('resize', onWindowResize)
+  function onWindowResize(){
+    onresize()
+    update({ animate: false })
   }
 
   function time (name, fn) {
